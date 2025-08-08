@@ -3,41 +3,37 @@ import argparse
 import os
 import re
 import time
-import datetime
 from collections import defaultdict, Counter
 import functools
+from urllib.parse import urlparse
 
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
 from rich.table import Table
 from rich.text import Text
-from urllib.parse import urlparse
 
 from taxii2client.v20 import Server
 from stix2 import Filter
 
 console = Console()
 
-# Cache dan proxy
-CACHE_FILE = "mitre_techniques.json"
 PROXIES = {
     "http": os.environ.get("HTTP_PROXY"),
     "https": os.environ.get("HTTPS_PROXY")
 }
 
-# Mapping URI patterns ke MITRE ID
 MITRE_FALSE_NEGATIVE_URI_PATTERNS = {
     "T1505.003": r"/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin\.php",
-    "T1059.004": r"User-Agent:.*() { :; };",  # Shellshock pattern in headers
+    "T1059.004": r"User-Agent:.*\(\) { :; };",  # Shellshock pattern
     "T1595.001": r"/admin|/login|/wp-login\.php|/panel|/dashboard|/config|/setup|/dev|/test",
     "T1592.004": r"/\.git|/\.env|/config\.php|/config\.json|/backup|/dump|/db|/phpinfo\.php",
     "T1210": r"/vpn|/remote|/ssl-vpn|/global-protect|/clientless",
-    "T1059.001": r"(cmd|command|exec|system)=.*",  # command injection
-    "T1203": r"\.\./|\.\.\\",  # directory traversal
-    "T1040": r"(select|union|from|where)=.*",  # sql injection
-    "T1055": r"<script>|onerror=|javascript:",  # xss
-    "T1110.003": r"/wp-login\.php|/xmlrpc\.php",  # wp brute force
+    "T1059.001": r"(cmd|command|exec|system)=.*",     # command injection
+    "T1203": r"\.\./|\.\.\\",                         # directory traversal
+    "T1040": r"(select|union|from|where)=.*",         # sql injection
+    "T1055": r"<script>|onerror=|javascript:",        # xss
+    "T1110.003": r"/wp-login\.php|/xmlrpc\.php",      # wp brute force
 }
 
 MITRE_ATTACK_TYPES = {
@@ -46,21 +42,21 @@ MITRE_ATTACK_TYPES = {
     "T1040": "SQL Injection",
     "T1055": "Cross Site Scripting (XSS)",
     "T1059": "Command and Scripting Interpreter",
-    "T1083": "Sensitive File Discovery",
+    "T1083": "File and Directory Discovery (local/remote paths)",
     "T1105": "Ingress Tool Transfer",
     "T1133": "External Remote Services",
-    "T1190": "Exploit Public-Facing Application",
+    "T1190": "Exploit Public-Facing Application (entry via discovered paths)",
     "T1203": "Directory Traversal",
     "T1210": "Exploitation of Remote Services",
     "T1547": "Boot or Logon Autostart Execution",
     "T1552.001": "Credential Dump (.env)",
     "T1552.002": "Git Exposure",
     "T1566": "Phishing Attempt",
-    "T1595": "Known Path Scanning",
+    "T1590": "Gather Victim Network Information",
+    "T1595": "Network Service Scanning",
     "T1566.001": "Spearphishing Attachment",
     "T1566.002": "Spearphishing Link",
     "T1566.003": "Spearphishing via Service",
-    "T1590": "Gather Victim Network Information",
     "T1583.001": "Acquire Infrastructure: Domains",
     "T1583.006": "Acquire Infrastructure: Web Services",
     "T1584.005": "Compromise Infrastructure: Botnet",
@@ -73,21 +69,15 @@ MITRE_ATTACK_TYPES = {
     "T1587.003": "Develop Capabilities: Exploit",
     "T1505.003": "PHPUnit Remote Code Execution",
     "T1059.004": "Shellshock Bash Remote Code Execution (CVE-2014-6271)",
-    "T1595.001": "Path Enumeration Attempt",
+    "T1595.001": "Web Directory Brute Force (e.g. dirsearch, gobuster)",
     "T1110.001": "Generic Login Bruteforce Attempt",
     "T1190.001": "Unauthenticated File Inclusion – LinkPreview Plugin Exploit",
     "T1110": "Fortinet SSL VPN Credential Stuffing",
-    "T1595.002": "GlobalProtect Login Page Enumeration Attempt",
-    "T1110.003": "WordPress Admin Brute Force Attack",
-    "T1595": "Network Service Scanning",
-    "T1595.001": "Web Directory Brute Force (e.g. dirsearch, gobuster)",
     "T1595.002": "Login Page Discovery / Enumeration (e.g. /admin, /wp-login.php)",
     "T1592.004": "Gather Victim Host Information: Web Directory Structure",
-    "T1190": "Exploit Public-Facing Application (entry via discovered paths)",
-    "T1083": "File and Directory Discovery (local/remote paths)"
+    "T1110.003": "WordPress Admin Brute Force Attack",
 }
 
-# Severity mapping
 MITRE_SEVERITY_LEVEL = {
     "T1552.001": "CRITICAL",
     "T1552.002": "HIGH",
@@ -100,7 +90,6 @@ MITRE_SEVERITY_LEVEL = {
     "T1566": "INFORMATION"
 }
 
-# Hostname → Identity mapping
 HOSTNAME_IDENTITY_MAP = {
     "tos-nusantara.ilcs.co.id": "Terminal Operating System Nusantara Cluster 1 - Palapa",
     "praya.ilcs.co.id": "Terminal Operating System Nusantara Cluster 1 - Praya",
@@ -113,10 +102,10 @@ HOSTNAME_IDENTITY_MAP = {
     "parama.pelindo.co.id": "Terminal Operating System Nusantara Parama",
     "phinnisi.pelindo.co.id": "Vessel Management System",
     "ptosc.pelindo.co.id": "Pelindo Terminal Operating System Car",
-    "ptosr.pelindo.co.id": "Pelindo Terminal Operating System Roro"
+    "ptosr.pelindo.co.id": "Pelindo Terminal Operating System Roro",
 }
 
-def get_severity_style(severity):
+def get_severity_style(severity: str) -> str:
     return {
         "CRITICAL": "bold red",
         "HIGH": "red",
@@ -126,19 +115,79 @@ def get_severity_style(severity):
         "INFO": "cyan"
     }.get(severity.upper(), "white")
 
+FQDN_REGEX = re.compile(
+    r"^(?=.{1,253}$)(?!-)([a-z0-9-]{1,63}\.)+[a-z]{2,63}$",
+    re.IGNORECASE
+)
+BAD_HOST_TOKENS = {"feed", "unknown", "-", "localhost", "127.0.0.1", "0.0.0.0"}
+
+def is_valid_hostname(h: str) -> bool:
+    if not h:
+        return False
+    h = h.strip().lower()
+    if h in BAD_HOST_TOKENS:
+        return False
+    if re.match(r"^\d{1,3}(\.\d{1,3}){3}$", h):
+        return h not in {"127.0.0.1", "0.0.0.0"}
+    return bool(FQDN_REGEX.match(h))
+
+def extract_hostname_from_entry(entry: dict) -> str | None:
+    for key in ("Host Name (Server)", "hostname", "host", "Host", "server"):
+        val = entry.get(key)
+        if val and is_valid_hostname(str(val).strip()):
+            return str(val).strip().lower()
+
+    uri = entry.get("URI", "")
+    if uri:
+        try:
+            parsed = urlparse(uri)
+            if parsed.hostname and is_valid_hostname(parsed.hostname):
+                return parsed.hostname.lower()
+        except Exception:
+            pass
+        m = re.search(r"([a-z0-9-]+\.)+[a-z]{2,63}", uri, flags=re.IGNORECASE)
+        if m and is_valid_hostname(m.group(0)):
+            return m.group(0).lower()
+    return None
+
+def choose_best_hostname(entries: list[dict]) -> str:
+    """
+    Pilih hostname terbaik secara otomatis:
+    - Hitung frekuensi hostname valid yang muncul
+    - Prioritaskan yang ada di HOSTNAME_IDENTITY_MAP
+    - Kalau tidak ada, ambil yang paling sering muncul
+    """
+    counts = Counter()
+    for e in entries:
+        h = extract_hostname_from_entry(e)
+        if h and is_valid_hostname(h):
+            counts[h] += 1
+
+    if not counts:
+        return "-"
+
+    # Prioritas: yang ada di identity map, urut berdasarkan frekuensi tertinggi
+    for h, _ in counts.most_common():
+        if h in HOSTNAME_IDENTITY_MAP:
+            return h
+
+    # Fallback: yang paling sering muncul
+    return counts.most_common(1)[0][0]
+
 @functools.lru_cache(maxsize=128)
-def get_mitre_technique_by_id_lazy(mitre_id):
+def get_mitre_technique_by_id_lazy(mitre_id: str) -> dict:
     try:
         server = Server("https://cti-taxii.mitre.org/taxii/")
         api_root = server.api_roots[0]
         collection = next((c for c in api_root.collections if "enterprise" in c.title.lower()), None)
         if not collection:
             return {"name": "Unknown", "description": "No data."}
+
         filter_techniques = [Filter("type", "=", "attack-pattern")]
         for obj in collection.query(filter_techniques):
             for ref in obj.get("external_references", []):
                 if ref.get("external_id") == mitre_id:
-                    MITRE_ATTACK_TYPES[ref.get("external_id")] = obj.get("name", "Unknown")
+                    MITRE_ATTACK_TYPES.setdefault(ref.get("external_id"), obj.get("name", "Unknown"))
                     return {
                         "name": obj.get("name", "Unknown"),
                         "description": obj.get("description", "No description.")
@@ -147,18 +196,7 @@ def get_mitre_technique_by_id_lazy(mitre_id):
         return {"name": "N/A", "description": "Connection failed."}
     return {"name": "N/A", "description": "Not found."}
 
-def extract_hostname(entry):
-    if "hostname" in entry:
-        return entry["hostname"]
-    uri = entry.get("URI", "")
-    if uri:
-        try:
-            return urlparse(uri).hostname
-        except:
-            return None
-    return None
-
-def analyze_uris(entries):
+def analyze_uris(entries: list[dict]) -> dict:
     mitre_summary = defaultdict(lambda: {"count": 0, "requests": 0, "uris": []})
     for entry in entries:
         uri = entry.get("URI", "")
@@ -175,17 +213,16 @@ def fetch_all_techniques(mitre_ids):
         task = progress.add_task("🔍 Mengambil data teknik MITRE...", total=len(mitre_ids))
         for mid in mitre_ids:
             get_mitre_technique_by_id_lazy(mid)
-            time.sleep(0.1)
+            time.sleep(0.03)
             progress.advance(task)
 
-def display_summary(mitre_summary, entries):
+def display_summary(mitre_summary: dict, entries: list[dict]):
     total_uri = sum(item["count"] for item in mitre_summary.values())
     total_requests = sum(item["requests"] for item in mitre_summary.values())
-    total_attacks = total_uri
     unique_uris = len(set(uri for item in mitre_summary.values() for uri in item["uris"]))
+    total_attacks = total_uri
 
-    all_hosts = list(set(filter(None, [extract_hostname(entry) for entry in entries])))
-    hostname = all_hosts[0] if all_hosts else "-"
+    hostname = choose_best_hostname(entries)
     identity = HOSTNAME_IDENTITY_MAP.get(hostname, "Unknown")
 
     severity_counter = Counter()
@@ -219,7 +256,7 @@ def display_summary(mitre_summary, entries):
     table.add_column("Severity")
     table.add_column("Jumlah URI", justify="right")
     table.add_column("Total Requests", justify="right")
-    table.add_column("Contoh Payload URI", style="green")
+    table.add_column("Contoh Payload URI", style="green", no_wrap=False, overflow="fold")
 
     top_5 = sorted(mitre_summary.items(), key=lambda x: x[1]["count"], reverse=True)[:5]
     for mitre_id, data in top_5:
@@ -236,14 +273,14 @@ def display_summary(mitre_summary, entries):
             sample_uris
         )
 
-    console.print(table)
+    console.print(table, width=console.width)
 
 def load_json(file_path):
     with open(file_path, "r") as f:
         return json.load(f)
 
 def main():
-    parser = argparse.ArgumentParser(description="🔍 URI Summary + MITRE ATT&CK")
+    parser = argparse.ArgumentParser(description="🔍 URI Summary + MITRE ATT&CK (Auto Hostname)")
     parser.add_argument("json_file", help="Path ke file JSON dari OCI Firewall")
     args = parser.parse_args()
 
