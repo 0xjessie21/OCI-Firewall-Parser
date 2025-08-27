@@ -21,8 +21,17 @@ pip3 install -r requirements.txt --break-system-packages
 ```
 
 # Usage
+Dynamic Baseline
 ```yaml
 python oci-parser.py YOUR_OCI_LOG.json
+```
+Acunetix Baseline
+```yaml
+python oci-parser.py YOUR_OCI_LOG.json --severity-profile acunetix --severity-mapping severity_mapping.json
+```
+CVSS Baseline
+```yaml
+python oci-parser.py YOUR_OCI_LOG.json --severity-profile cvss --severity-mapping severity_mapping.json
 ```
 
 ## Credits
