@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}OCI Threat Monitoring – BOD Dashboard{% endblock %}
+
+{% block content %}
+
+<header class="page-header d-flex justify-content-between align-items-end">
+    <div>
+        <div class="page-title">ILCS Champion Apps Cyber Threat Overview</div>
+        <div class="page-subtitle">Real-time attack landscape for critical terminal systems</div>
+    </div>
+
+    <div class="text-end">
+        <div class="pill-label">SCOPE</div>
+        <div class="tenant-pill mt-1" id="tenantScope">ILCS CHAMPION APPS</div>
+    </div>
+</header>
+
+<!-- Include Sections -->
+{% include "partials/executive.html" %}
+{% include "partials/tenants.html" %}
+{% include "partials/kpi.html" %}
+
+{% endblock %}

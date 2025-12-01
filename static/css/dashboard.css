@@ -1,0 +1,273 @@
+/* ===== Layout dasar halaman dashboard BOD ===== */
+
+body {
+    background: radial-gradient(circle at top, #111827 0, #020617 45%, #000 100%);
+    color: #e5e7eb;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+}
+
+.page-header {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.4);
+    padding: 1.25rem 0 0.75rem 0;
+    margin-bottom: 0.75rem;
+}
+
+.page-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.page-subtitle {
+    font-size: 0.85rem;
+    color: #9ca3af;
+}
+
+/* ===== Card Neon (kartu KPI & panel) ===== */
+
+.card-neon {
+    background: radial-gradient(circle at top left,
+        rgba(56,189,248,0.12) 0,
+        rgba(15,23,42,0.95) 40%,
+        rgba(15,23,42,1) 100%);
+    border-radius: 14px;
+    border: 1px solid rgba(148,163,184,0.4);
+    box-shadow: 0 0 24px rgba(15,23,42,0.9);
+    position: relative;
+    overflow: hidden;
+}
+
+.card-neon::before {
+    content: "";
+    position: absolute;
+    inset: -40%;
+    background: conic-gradient(from 180deg,
+        rgba(56,189,248,0.15),
+        transparent,
+        rgba(244,114,182,0.2),
+        transparent);
+    opacity: 0;
+    transition: opacity .35s ease;
+    pointer-events: none;
+}
+
+.card-neon:hover::before {
+    opacity: 1;
+}
+
+/* ===== KPI Typography ===== */
+
+.kpi-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #9ca3af;
+}
+
+.kpi-value {
+    font-size: 1.9rem;
+    font-weight: 700;
+}
+
+.kpi-badge {
+    font-size: 0.75rem;
+    padding: 0.15rem .55rem;
+    border-radius: 999px;
+    border: 1px solid rgba(148,163,184,0.5);
+    color: #e5e7eb;
+}
+
+.kpi-tagline {
+    font-size: 0.78rem;
+    color: #9ca3af;
+}
+
+/* ===== Scope pill (kanan atas) ===== */
+
+.pill-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: .2em;
+    color: #9ca3af;
+}
+
+.tenant-pill {
+    padding: 0.35rem .9rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    border: 1px solid rgba(148,163,184,0.6);
+    background: radial-gradient(circle at top,
+        rgba(56,189,248,0.18),
+        rgba(15,23,42,0.9));
+    color: #e5e7eb;
+    font-weight: 600;
+}
+
+/* ===== Sidebar (dipakai di base.html) ===== */
+
+.sidebar {
+    background: radial-gradient(circle at top left, #020617, #020617 40%, #000 100%);
+    border-right: 1px solid rgba(31,41,55,0.9);
+    min-height: 100vh;
+}
+
+.nav-link {
+    border-radius: 999px;
+    margin: .2rem .4rem;
+    color: #9ca3af;
+    font-size: .9rem;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    border: none;
+    background: transparent;
+}
+
+.nav-link .nav-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #4b5563;
+}
+
+.nav-link.active {
+    background: radial-gradient(circle at left,
+        rgba(56,189,248,0.35),
+        rgba(15,23,42,0.9));
+    color: #e5e7eb;
+}
+
+.nav-link.active .nav-dot {
+    background: #22d3ee;
+    box-shadow: 0 0 8px rgba(56,189,248,0.9);
+}
+
+/* ===== View switching ===== */
+
+.view-section {
+    display: none;
+}
+
+.view-section.active {
+    display: block;
+}
+
+/* ===== Cyber map area ===== */
+
+.cyber-map {
+    position: relative;
+    height: 220px;
+    border-radius: 14px;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 10% 10%, rgba(56,189,248,0.3), transparent 55%),
+        radial-gradient(circle at 80% 80%, rgba(244,114,182,0.25), transparent 60%),
+        radial-gradient(circle at 50% 40%, rgba(34,197,94,0.2), transparent 55%),
+        #020617;
+    border: 1px solid rgba(148,163,184,0.3);
+}
+
+.map-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(15,23,42,0.8) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15,23,42,0.8) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: .5;
+}
+
+/* Node & line untuk cyber_map.js */
+
+.cyber-node {
+    /* posisi, warna, dll diatur di JS; di sini hanya fallback kecil */
+    cursor: default;
+}
+
+.cyber-line {
+    animation: glowLine 2.5s ease-in-out infinite;
+}
+
+/* ===== Severity badge (MITRE table) ===== */
+
+.sev-badge {
+    font-size: .7rem;
+    padding: .1rem .4rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+}
+
+.sev-critical {
+    background: rgba(220,38,38,0.1);
+    border-color: rgba(248,113,113,0.8);
+    color: #fecaca;
+}
+
+.sev-high {
+    background: rgba(245,158,11,0.08);
+    border-color: rgba(251,191,36,0.9);
+    color: #facc15;
+}
+
+.sev-medium {
+    background: rgba(59,130,246,0.08);
+    border-color: rgba(96,165,250,0.9);
+    color: #bfdbfe;
+}
+
+.sev-low {
+    background: rgba(16,185,129,0.08);
+    border-color: rgba(52,211,153,0.9);
+    color: #a7f3d0;
+}
+
+.sev-info {
+    background: rgba(148,163,184,0.1);
+    border-color: rgba(148,163,184,0.8);
+    color: #e5e7eb;
+}
+
+/* Hover row MITRE table */
+
+#attackDetailTable tbody tr:hover {
+    background-color: rgba(31,41,55,0.9) !important;
+}
+
+/* ===== Chart canvas sizing ===== */
+
+#tenantWallChart {
+    height: 420px !important;
+    max-height: 500px;
+}
+
+#owaspChart {
+    height: 380px !important;
+    max-height: 460px;
+}
+
+#trendChart {
+    height: 380px !important;
+    max-height: 460px;
+}
+
+/* ===== Animations ===== */
+
+@keyframes pulseGlow {
+    0% {
+        box-shadow: 0 0 5px rgba(34,211,238,0.8),
+                    0 0 15px rgba(34,211,238,0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(34,211,238,1),
+                    0 0 45px rgba(34,211,238,0.8);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(34,211,238,0.8),
+                    0 0 15px rgba(34,211,238,0.5);
+    }
+}
+
+@keyframes glowLine {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}

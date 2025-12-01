@@ -1,0 +1,67 @@
+<section id="view-exec" class="view-section active mt-3">
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-3">
+            <div class="card-neon p-3 h-100">
+                <div class="kpi-label mb-1">Total Serangan</div>
+                <div class="d-flex justify-content-between align-items-baseline">
+                    <div class="kpi-value" id="kpiTotal">0</div>
+                    <span class="kpi-badge" id="kpiTrendBadge">Stable</span>
+                </div>
+                <div class="kpi-tagline mt-2" id="kpiTotalText">
+                    Volume total serangan yang terdeteksi dari seluruh tenant kritikal.
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card-neon p-3 h-100">
+                <div class="kpi-label mb-1">Jumlah Tenant Aktif</div>
+                <div class="kpi-value" id="kpiTenantCount">0</div>
+                <div class="kpi-tagline mt-2">Sistem kritikal yang menjadi target serangan.</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card-neon p-3 h-100">
+                <div class="kpi-label mb-1">Attack Velocity</div>
+                <div class="kpi-value" id="kpiVelocity">-</div>
+                <div class="kpi-tagline mt-2">Rata-rata serangan per slot waktu.</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card-neon p-3 h-100">
+                <div class="kpi-label mb-1">Peak Time</div>
+                <div class="kpi-value" id="kpiPeakTime">-</div>
+                <div class="kpi-tagline mt-2">Periode serangan terpadat.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-8">
+            <div class="card-neon p-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <div class="kpi-label">Tren Serangan</div>
+                </div>
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card-neon p-3 h-100">
+                <div class="kpi-label mb-2">Ringkasan Risiko</div>
+                <div id="riskHighlights" class="small"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-neon p-3">
+        <div class="kpi-label mb-2">Attack Landscape</div>
+        <div class="cyber-map" id="cyberMap">
+            <div class="map-grid"></div>
+        </div>
+    </div>
+
+</section>

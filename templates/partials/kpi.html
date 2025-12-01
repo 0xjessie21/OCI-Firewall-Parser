@@ -1,0 +1,54 @@
+<section id="view-kpi" class="view-section mt-3">
+
+    <div class="row g-3 mb-3">
+
+        <div class="col-md-4">
+            <div class="card-neon p-3 h-100">
+                <div class="kpi-label">Dominant OWASP Category</div>
+                <div class="kpi-value" id="kpiTopOwasp">-</div>
+                <div class="kpi-tagline" id="kpiTopOwaspText">–</div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card-neon p-3 h-100">
+                <div class="kpi-label">Most Used MITRE Technique</div>
+                <div class="kpi-value" id="kpiTopMitre">-</div>
+                <div class="kpi-tagline" id="kpiTopMitreText">–</div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card-neon p-3 h-100">
+                <div class="kpi-label">High/Critical Severity Events</div>
+                <div class="kpi-value" id="kpiHighCrit">0</div>
+                <div class="kpi-tagline" id="kpiHighCritText">–</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-neon p-3 mb-4">
+        <div class="kpi-label mb-2">OWASP Category Distribution</div>
+        <canvas id="owaspChart"></canvas>
+    </div>
+
+    <div class="card-neon p-3">
+        <div class="kpi-label">Attack Details per MITRE Technique</div>
+        <div class="table-responsive">
+            <table class="table table-dark table-striped table-sm" id="attackDetailTable">
+                <thead>
+                    <tr>
+                        <th>MITRE ID</th>
+                        <th>Category</th>
+                        <th>OWASP</th>
+                        <th>Severity</th>
+                        <th>Events</th>
+                        <th>Tenants</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
