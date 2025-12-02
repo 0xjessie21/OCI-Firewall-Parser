@@ -8,6 +8,7 @@
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
 Dashboard ini dirancang sebagai **platform visualisasi keamanan siber modern** untuk menganalisis serangan terhadap aplikasi Anda di **Oracle Cloud Infrastructure (OCI)**.  
+
 Menggunakan data dari **OCI Web Application Firewall (WAF)** serta, dashboard ini menyediakan pemantauan analisis risiko otomatis, serta mapping langsung ke **MITRE ATT&CK** dan **OWASP Top 10**.
 
 ---
