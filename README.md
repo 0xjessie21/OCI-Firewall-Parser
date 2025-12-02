@@ -110,11 +110,11 @@ logs/
     ├── waf_export_2025-11-25.json
     └── ...
 ```
-### 4️⃣ Run dashboard
+### 3️⃣ Run dashboard
 ```bash
 python3 server.py --log logs/*.json --debug
 ```
-### 5️⃣ UI Access
+### 4️⃣ UI Access
 ```bash
 http://localhost:8080
 ```
