@@ -103,14 +103,22 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt --break-system-packages
 ```
-### 2️⃣ Run dashboard
+### 2️⃣ Save OCI logs to the logs/ folder (MANDATORY)
+```yaml
+logs/
+    ├── waf_log_2025-11-24.json
+    ├── waf_export_2025-11-25.json
+    └── ...
+```
+### 4️⃣ Run dashboard
 ```bash
 python3 server.py --log logs/*.json --debug
 ```
-### 3️⃣ UI Access
+### 5️⃣ UI Access
 ```bash
 http://localhost:8080
 ```
+
 ---
 
 ## 🛠️ Roadmap
