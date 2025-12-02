@@ -12,7 +12,7 @@ Menggunakan data dari **OCI Web Application Firewall (WAF)** serta, dashboard in
 
 ---
 
-## ✨ Fitur Utama
+## ✨ Features
 
 ### 🧠 1. Risk-Based Severity Engine  
 Severity ditentukan oleh:
@@ -66,7 +66,7 @@ Output: **Low, Medium, High, Critical** (bukan sekedar hitungan volume).
 
 ---
 
-## 📁 Struktur Folder
+## 📁 Structure
 
 ```bash
 /project
