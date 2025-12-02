@@ -1,4 +1,4 @@
-# 🔐 OCI Cyber Monitoring Dashboard  
+# 🔐 OCI Threat Monitoring Dashboard  
 **Monitoring Threat Intelligence • MITRE ATT&CK Insights • Risk-Based Severity Engine**
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge&logo=python)
