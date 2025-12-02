@@ -97,6 +97,10 @@ Output: **Low, Medium, High, Critical** (bukan sekedar hitungan volume).
 
 ### 1️⃣ Install dependencies
 ```bash
+git clone https://github.com/0xjessie21/OCI-Firewall-Parser.git oci-dashboard
+cd oci-dashboard/
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt --break-system-packages
 ```
 ### 2️⃣ Run dashboard
