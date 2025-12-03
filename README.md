@@ -1,5 +1,5 @@
 # 🔐 OCI Threat Monitoring Dashboard  
-**Monitoring Threat Intelligence • MITRE ATT&CK Insights • Risk-Based Severity Engine**
+**Threat Monitoring Intelligence • MITRE ATT&CK Insights • Risk-Based Severity Engine**
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge&logo=python)
 ![Flask](https://img.shields.io/badge/Flask-Backend-black?style=for-the-badge&logo=flask)
