@@ -70,27 +70,50 @@ Output: **Low, Medium, High, Critical** (bukan sekedar hitungan volume).
 ## 📁 Structure
 
 ```bash
-/project
-├── server.py                 # Backend API
-├── severity_engine.py        # Risk-Based Severity Engine
-├── oci_realtime_fetcher.py   # Realtime Logging Search connector (TODO)
-├── oci_parser_core.py        # Parser untuk file log OCI WAF
+OCI-Firewall-Parser/
+├── LICENSE
+├── oci-parser.py
+├── oci_parser_core.py
+├── oci_realtime_fetcher.py
+├── README.md
 ├── requirements.txt
+├── server.py
+├── severity_engine.py
+├── severity_mapping.json
 │
-├── templates/
-│   └── dashboard_bod.html    # Main UI HTML
+├── assets/
+│   └── screenshots/
+│       ├── executive.png
+│       └── tenants.png
+│
+├── keys/
+│   └── your_oci_key.pem
+│
+├── logs/
+│   └── your_log.json
 │
 ├── static/
+│   ├── css/
+│   │   ├── dashboard.css
+│   │   └── warroom.css
+│   │
 │   └── js/
-│       ├── executive.js      # Executive Summary logic
-│       ├── tenants.js        # Tenant Analytics
-│       ├── kpi.js            # OWASP + MITRE analytics
-│       ├── cyber_map.js      # Cyber Map visualization
-│       ├── realtime.js       # Realtime monitoring (TODO)
-│       └── utils.js          # Helper functions
+│       ├── cyber_map.js
+│       ├── dashboard.js
+│       ├── executive.js
+│       ├── kpi.js
+│       ├── realtime.js
+│       ├── tenants.js
+│       └── utils.js
 │
-└── assets/
-    └── screenshots/          # Dokumentasi screenshot dashboard
+└── templates/
+    ├── base.html
+    ├── dashboard_bod.html
+    │
+    └── partials/
+        ├── executive.html
+        ├── kpi.html
+        └── tenants.html
 ```
 
 ---
